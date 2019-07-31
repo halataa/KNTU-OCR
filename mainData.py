@@ -67,5 +67,8 @@ def create_data_file ():
                 count+=1
             except :
                 failNumber+=1    
-create_data_file()
+
+
 #%%
+with open ('D:\\UNIVERSITY\\BACHELOR PROJECT\\Data\\CSV\\dataFile.csv' , 'r' , encoding='utf8') as dataFile:
+    
