@@ -40,6 +40,7 @@ for file in glob.glob('D:\\UNIVERSITY\\BACHELOR PROJECT\\Most operational Fonts\
     fontName = re.findall(r'Fonts\\(B .+)\.', file)  # just B series
     fontFile = file
     font = ImageFont.truetype(fontFile, 50)
+    text = 'ali'
     img = create_image(text,imageNumber)
     img = resize_image(img)
     img.save('D:\\UNIVERSITY\\BACHELOR PROJECT\\Data\\%i %s .png' % (imageNumber, fontName))
@@ -58,6 +59,7 @@ def create_data_file ():
     with open ('D:\\UNIVERSITY\\BACHELOR PROJECT\\Data\\CSV\\dataFile.csv' , 'w' , encoding='utf8') as dataFile:
         for i in range (0,summaryNumber):
             try :
+                print(i)
                 summary=wikipedia.summary(wikipedia.random())
                 pureSummary=re.sub(r'[^\s.،!؟?):/(٪|ء-ی|۰-۹|0-9]','',summary) #eliminate non persian characters
                 pure_summary_list=pureSummary.split(' ')
@@ -69,6 +71,4 @@ def create_data_file ():
                 failNumber+=1    
 
 
-#%%
-with open ('D:\\UNIVERSITY\\BACHELOR PROJECT\\Data\\CSV\\dataFile.csv' , 'r' , encoding='utf8') as dataFile:
     
