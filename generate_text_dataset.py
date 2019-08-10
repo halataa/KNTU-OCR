@@ -4,6 +4,7 @@ import pandas as pd
 import pickle
 import random
 import re
+import labelize as lb
 
 text_data_directory = 'D:\\UNIVERSITY\\BACHELOR PROJECT\\Data\\'
 df = pd.read_excel(text_data_directory+'Persian Words.xlsx')
@@ -26,13 +27,13 @@ for i in range(len(moinList)):
 with open(text_data_directory+'alphabetList.txt','rb') as file:
     alphabetList = pickle.load(file)
 for item in moinList:        
-    for let in item:
+    itemTxt = lb.letterSeperator(item)
+    for let in itemTxt:
         if let not in alphabetList:
             print('(%s) not in list'%let) 
             moinList.remove(item)
             print('%s removed!'%item)
-
-
+        
 with open(text_data_directory+'moin.txt', 'wb') as moin:
     pickle.dump(moinList, moin)
 
@@ -45,6 +46,3 @@ with open(text_data_directory+'nastaliq.txt', 'wb') as nastaliqFile:
 
 with open(text_data_directory+'moinMN.txt', 'wb') as moinMN_file:
     pickle.dump(moinList, moinMN_file)
-
-
-#%%
