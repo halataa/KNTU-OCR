@@ -1,7 +1,7 @@
 from arabic_reshaper import letters
 #%% create nachasb list
-nachasb=['ا','آ','ر','ز','ژ','و','د',' ']
-for i in range(7):
+nachasb=['ا','آ','ر','ز','ژ','و','د','ذ',' ']
+for i in range(8):
     nachasb.append(letters.connects_with_letter_before(nachasb[i]))
 print(nachasb)
 
