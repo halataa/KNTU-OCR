@@ -3,7 +3,6 @@ from arabic_reshaper import letters
 nachasb=['ا','آ','ر','ز','ژ','و','د',' ']
 for i in range(7):
     nachasb.append(letters.connects_with_letter_before(nachasb[i]))
-print(nachasb)
 
 #%% reforming letter functions
 def e_connects_with_letter_after(let):
@@ -28,7 +27,7 @@ def  e_connects_with_letters_before_and_after(let) :
 
 
 #%% creating bechasb nachasb list
-text='امیر بی گزند'
+text='ایر بی گزند'
 bn_list=[]
 text=' '+text+' '
 for let in text:
@@ -36,10 +35,6 @@ for let in text:
         bn_list.append('n')    
     else:
         bn_list.append('b')
-
-# for i in range (1,len(text)-1): # just for observe
-#     bn=bn_list[i-1]+bn_list[i]+bn_list[i+1]
-#     print(bn)
 
 
 #%% creating real word     
@@ -53,7 +48,6 @@ for i in range (1,len(text)-1):
         else:
             print(e_connects_with_letter_before(text[i]))
             realWord=realWord+e_connects_with_letter_before(text[i])
-    
     elif bn_list[i]=='b':
         if bn_list[i-1]=='n':
             if text[i+1]==' ':
