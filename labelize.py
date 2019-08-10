@@ -20,7 +20,7 @@ def  e_connects_with_letters_before_and_after(let) :
 
 #%%
 import pickle
-with open('C:\\Users\\Ali\\Documents\\Uni\\Projects\\OCR\\resources\\alphabetList.txt','rb') as file:
+with open('D:\\UNIVERSITY\\BACHELOR PROJECT\\Data\\alphabetList.txt','rb') as file:
     alphabetList = pickle.load(file)
 
 #%%
@@ -32,8 +32,7 @@ def label_IO(letter):
         label[alphaIndex] = 1
         return label
     else:
-        print('(%s) not in list'%letter)
-     
+        print('(%s) not in list'%letter)     
     
 
 #%% letter seperator
