@@ -1,9 +1,3 @@
-from arabic_reshaper import letters
-#%% create nachasb list
-nachasb=['ا','آ','ر','ز','ژ','و','د',' ']
-for i in range(7):
-    nachasb.append(letters.connects_with_letter_before(nachasb[i]))
-
 #%% reforming letter functions
 def e_connects_with_letter_after(let):
     a= letters.connects_with_letter_after(let)
@@ -24,49 +18,60 @@ def  e_connects_with_letters_before_and_after(let) :
     else:
         return(a)    
 
+#%%
+import pickle
+with open('C:\\Users\\Ali\\Documents\\Uni\\Projects\\OCR\\resources\\alphabetList.txt','rb') as file:
+    alphabetList = pickle.load(file)
 
-
-#%% creating bechasb nachasb list
-text='ایر بی گزند'
-bn_list=[]
-text=' '+text+' '
-for let in text:
-    if let in nachasb:
-        bn_list.append('n')    
+#%%
+import numpy as np
+def label_IO(letter):
+    label = np.zeros(len(alphabetList),dtype=int)
+    if letter in alphabetList:
+        alphaIndex = alphabetList.index(letter)
+        label[alphaIndex] = 1
+        return label
     else:
-        bn_list.append('b')
+        print('(%s) not in list'%letter)
+     
+    
 
-
-#%% creating real word     
-realWord=''
-for i in range (1,len(text)-1):
-
-    if bn_list[i]=='n' :
-        if bn_list[i-1]=='n':
-            print(text[i])
-            realWord=realWord+text[i]
+#%% letter seperator
+from arabic_reshaper import letters
+def letterSeperator(text):
+    #creating nachasb list
+    nachasb=['ا','آ','ر','ز','ژ','و','د','ذ',' '] 
+    for i in range (len(nachasb)-1):
+        nachasb.append(e_connects_with_letter_before(nachasb[i]))
+    #labeling b and n for letters sequence
+    bn_list=[]
+    text=' '+text+' '
+    for let in text:
+        if let in nachasb:
+            bn_list.append('n')    
         else:
-            print(e_connects_with_letter_before(text[i]))
-            realWord=realWord+e_connects_with_letter_before(text[i])
-    elif bn_list[i]=='b':
-        if bn_list[i-1]=='n':
-            if text[i+1]==' ':
-                print(text[i])
-                realWord=realWord+text[i]
-            elif text[i+1]!=' ':
-                print(e_connects_with_letter_after(text[i]))    
-                realWord=realWord+e_connects_with_letter_after(text[i])
-        elif bn_list[i-1]=='b':
-            if text[i+1]==' ':
-                print(e_connects_with_letter_before(text[i]))
-                realWord=realWord+e_connects_with_letter_before(text[i])
-            elif text[i+1]!=' ':
-                print(e_connects_with_letters_before_and_after(text[i]))
-                realWord=realWord+e_connects_with_letters_before_and_after(text[i])
-print('realWord is %s' %realWord)                
+            bn_list.append('b')
+    #seperating letters
+    seperatedList = []
+    for i in range (1,len(text)-1):
+        if bn_list[i]=='n' :
+            if bn_list[i-1]=='n':
+                seperatedList.append(text[i])
+            else:
+                seperatedList.append(e_connects_with_letter_before(text[i]))
+        elif bn_list[i]=='b':
+            if bn_list[i-1]=='n':
+                if text[i+1]==' ':
+                    seperatedList.append(text[i])
+                elif text[i+1]!=' ':
+                    seperatedList.append(e_connects_with_letter_after(text[i]))    
+            elif bn_list[i-1]=='b':
+                if text[i+1]==' ':
+                    seperatedList.append(e_connects_with_letter_before(text[i]))
+                elif text[i+1]!=' ':
+                    seperatedList.append(e_connects_with_letters_before_and_after(text[i]))
+    return seperatedList 
 
 
 
-
-
-# BND={'bbs':letters.connects_with_letters_before_and_after(let) , 'bb-':letters.connects_with_letter_before(let),'bn':letters.connects_with_letter_before(let),'nbs':letters.connects_with_letter_after(let),'nb-':let,'nn':let}
+#%%
