@@ -1,12 +1,3 @@
-<<<<<<< HEAD
-from arabic_reshaper import letters
-#%% create nachasb list
-nachasb=['ا','آ','ر','ز','ژ','و','د','ذ',' ']
-for i in range(8):
-    nachasb.append(letters.connects_with_letter_before(nachasb[i]))
-
-=======
->>>>>>> ali
 #%% reforming letter functions
 def e_connects_with_letter_after(let):
     a= letters.connects_with_letter_after(let)
