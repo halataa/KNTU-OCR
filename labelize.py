@@ -72,6 +72,3 @@ def letterSeperator(text):
                     seperatedList.append(e_connects_with_letters_before_and_after(text[i]))
     return seperatedList 
 
-
-
-#%%
