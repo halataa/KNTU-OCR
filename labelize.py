@@ -25,15 +25,12 @@ with open('C:\\Users\\Ali\\Documents\\Uni\\Projects\\OCR\\resources\\alphabetLis
 
 #%%
 import numpy as np
-def label_IO(letter):
-    label = np.zeros(len(alphabetList),dtype=int)
-    if letter in alphabetList:
-        alphaIndex = alphabetList.index(letter)
-        label[alphaIndex] = 1
-        return label
-    else:
-        print('(%s) not in list'%letter)
-     
+def labeling(text):
+    labelList = []
+    sep = letterSeperator(text)
+    for l in sep:
+        labelList.append(alphabetList.index(l))
+    return labelList
     
 
 #%% letter seperator
@@ -72,3 +69,6 @@ def letterSeperator(text):
                     seperatedList.append(e_connects_with_letters_before_and_after(text[i]))
     return seperatedList 
 
+
+
+#%%
