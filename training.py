@@ -11,11 +11,11 @@ K.set_learning_phase(0)
 
 model = model.get_Model(training=True)
 
-train_file_path = 'C:\\Users\\Ali\\Documents\\Uni\\Projects\\OCR\\resources\\data base\\train data\\'
+train_file_path = 'D:\\UNIVERSITY\\BACHELOR PROJECT\\Data\\mainDataset\\Train Data\\'
 train_gen = data_generator.TextImageGenerator(train_file_path,720,32,16,4)
 train_gen.build_data()
 
-val_file_path = 'C:\\Users\\Ali\\Documents\\Uni\\Projects\\OCR\\resources\\data base\\val data\\'
+val_file_path = 'D:\\UNIVERSITY\\BACHELOR PROJECT\\Data\\mainDataset\\Validation Data\\'
 val_gen = data_generator.TextImageGenerator(val_file_path,720,32,16,4)
 val_gen.build_data()
 
@@ -32,6 +32,6 @@ model.fit_generator(generator=train_gen.next_batch(),
                     steps_per_epoch=int(train_gen.n / train_gen.batch_size),
                     epochs=30,
                     validation_data=val_gen.next_batch(),
-                    validation_steps=int(val_gen.n / val_gen.batch_size))
+                    validation_steps=int(val_gen.n / val_gen.batch_size),verbose=1)
 
 #%%
