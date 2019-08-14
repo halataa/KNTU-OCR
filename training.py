@@ -2,20 +2,20 @@
 from keras import backend as K
 from keras.optimizers import Adadelta
 from keras.callbacks import EarlyStopping, ModelCheckpoint
-from KNTU_OCR import data_generator
-from KNTU_OCR import model
-from KNTU_OCR import parameters as p
+import data_generator
+import model
+import parameters as p
 K.set_learning_phase(0)
 
 # # Model description and training
 
 model = model.get_Model(training=True)
 
-train_file_path = 'D:\\UNIVERSITY\\BACHELOR PROJECT\\Data\\mainDataset\\Train Data\\'
+train_file_path = 'D:\\UNIVERSITY\\BACHELOR PROJECT\\Data\\mainDataset\\train\\'
 train_gen = data_generator.TextImageGenerator(train_file_path,720,32,16,4)
 train_gen.build_data()
 
-val_file_path = 'D:\\UNIVERSITY\\BACHELOR PROJECT\\Data\\mainDataset\\Validation Data\\'
+val_file_path = 'D:\\UNIVERSITY\\BACHELOR PROJECT\\Data\\mainDataset\\valid\\'
 val_gen = data_generator.TextImageGenerator(val_file_path,720,32,16,4)
 val_gen.build_data()
 

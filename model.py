@@ -5,7 +5,7 @@ from keras.layers import Reshape, Lambda, BatchNormalization
 from keras.layers.merge import add, concatenate
 from keras.models import Model
 from keras.layers.recurrent import LSTM
-from KNTU_OCR import parameters as p
+import parameters as p
 
 K.set_learning_phase(0)
 

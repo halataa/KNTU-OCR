@@ -91,7 +91,7 @@ while len(moin) > 0:
         imageArray = np.concatenate((extraArray, imageArray), axis=1)
         image = Image.fromarray(imageArray*255)
         image.save(
-            "D:\\UNIVERSITY\\BACHELOR PROJECT\\Data\\mainDataset\\kntu%s.png" % imageNumber)
+            "D:\\UNIVERSITY\\BACHELOR PROJECT\\Data\\mainDataset\\kntu%s.png" % imageNumber, mode='L')
         with open("D:\\UNIVERSITY\\BACHELOR PROJECT\\Data\\mainDataset\\kntu%s.txt" % imageNumber, 'w', encoding='utf8') as txt:
             txt.write('%s \nfont : %s' % (text, fontName))
         mainList.append(text)

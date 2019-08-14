@@ -1,8 +1,8 @@
 #%%
 from PIL import Image
 import os
-from KNTU_OCR import parameters as p
-from KNTU_OCR import labelize as lb
+import parameters as p
+import labelize as lb
 import numpy as np
 import re
 import random

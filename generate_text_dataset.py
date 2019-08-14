@@ -47,3 +47,6 @@ with open(text_data_directory+'nastaliq.txt', 'wb') as nastaliqFile:
 
 with open(text_data_directory+'moinMN.txt', 'wb') as moinMN_file:
     pickle.dump(moinList, moinMN_file)
+
+
+#%%
