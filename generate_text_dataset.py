@@ -28,7 +28,7 @@ for i in range(len(moinList)):
 with open(text_data_directory+'alphabetList.txt','rb') as file:
     alphabetList = pickle.load(file)
 j = 0
-for item in moinList: # Run at least two times!       
+for item in moinList:        
     itemTxt = lb.letterSeperator(item)
     j += 1
     for let in itemTxt:
@@ -39,7 +39,19 @@ for item in moinList: # Run at least two times!
             print(len(moinList))
             print(j)
             break
+print('***************')
 
+for item in moinList: #we dont know why but in first time it doesnt work properly :))       
+    itemTxt = lb.letterSeperator(item)
+    j += 1
+    for let in itemTxt:
+        if let not in alphabetList:
+            print('(%s) not in list'%let) 
+            del(moinList[moinList.index(item)])
+            print('%s removed!'%item)
+            print(len(moinList))
+            print(j)
+            break
 
 with open(text_data_directory+'moin.txt', 'wb') as moin:
     pickle.dump(moinList, moin)
