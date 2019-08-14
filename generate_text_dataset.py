@@ -12,7 +12,7 @@ moinList = df['Moin'].tolist()
 moinList = moinList[0:32642]
 nastaliqList = []
 
-mardudList = ['ء', 'ْ', 'ٌ', 'ٍ', 'ً', 'ُ', 'ِ', 'َ', 'ّ', 'ٰ', 'ٔ', 'ء','´']
+mardudList = ['ء', 'ْ', 'ٌ', 'ٍ', 'ً', 'ُ', 'ِ', 'َ', 'ّ', 'ٰ', 'ٔ', 'ء','´',r'\.']
 
 for i in range(len(moinList)):
     moinList[i] = re.sub(r'ئ', 'ی', moinList[i])
@@ -24,17 +24,23 @@ for i in range(len(moinList)):
 
     for item in mardudList:
         moinList[i] = re.sub(r'%s' % item, '', moinList[i])
+
 with open(text_data_directory+'alphabetList.txt','rb') as file:
     alphabetList = pickle.load(file)
-for item in moinList:        
+j = 0
+for item in moinList: # Run at least two times!       
     itemTxt = lb.letterSeperator(item)
+    j += 1
     for let in itemTxt:
         if let not in alphabetList:
             print('(%s) not in list'%let) 
+            del(moinList[moinList.index(item)])
             print('%s removed!'%item)
-            if item in moinList:
-                moinList.remove(item)
-        
+            print(len(moinList))
+            print(j)
+            break
+
+
 with open(text_data_directory+'moin.txt', 'wb') as moin:
     pickle.dump(moinList, moin)
 
@@ -47,3 +53,6 @@ with open(text_data_directory+'nastaliq.txt', 'wb') as nastaliqFile:
 
 with open(text_data_directory+'moinMN.txt', 'wb') as moinMN_file:
     pickle.dump(moinList, moinMN_file)
+
+
+#%%
