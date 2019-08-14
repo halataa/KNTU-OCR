@@ -18,10 +18,10 @@ for i in range(len(moinList)):
     moinList[i] = re.sub(r'ئ', 'ی', moinList[i])
     moinList[i] = re.sub(r'أ', 'ا', moinList[i])
     moinList[i] = re.sub(r'إ', 'ا', moinList[i])
-    moinList[i] = re.sub(r'ﺂ', 'ا', moinList[i])
     moinList[i] = re.sub(r'ؤ', 'و', moinList[i])
     moinList[i] = re.sub(r'ة', 'ه', moinList[i])
     moinList[i] = re.sub(r'ك', 'ک', moinList[i])
+
     for item in mardudList:
         moinList[i] = re.sub(r'%s' % item, '', moinList[i])
 with open(text_data_directory+'alphabetList.txt','rb') as file:
@@ -31,8 +31,9 @@ for item in moinList:
     for let in itemTxt:
         if let not in alphabetList:
             print('(%s) not in list'%let) 
-            moinList.remove(item)
             print('%s removed!'%item)
+            if item in moinList:
+                moinList.remove(item)
         
 with open(text_data_directory+'moin.txt', 'wb') as moin:
     pickle.dump(moinList, moin)
