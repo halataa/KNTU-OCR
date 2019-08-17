@@ -17,13 +17,13 @@ def ctc_lambda_func(args):
     return K.ctc_batch_cost(labels, y_pred, input_length, label_length)
 
 def get_Model(training):
-    input_shape = (p.img_w, p.img_h, 1)     # (800, 32, 1)
+    input_shape = (p.img_w, p.img_h, 1)     # (720, 32, 1)
 
     # Make Networkw
-    inputs = Input(name='the_input', shape=input_shape, dtype='float32')  # (None, 800, 32, 1)
+    inputs = Input(name='the_input', shape=input_shape, dtype='float32')  # (None, 720, 32, 1)
 
     # Convolution layer (VGG)
-    inner = Conv2D(64, (3, 3), padding='same', name='conv1', kernel_initializer='he_normal')(inputs)  # (None, 800, 32, 64)
+    inner = Conv2D(64, (3, 3), padding='same', name='conv1', kernel_initializer='he_normal')(inputs)  # (None, 720, 32, 64)
     inner = BatchNormalization()(inner)
     inner = Activation('relu')(inner)
     inner = MaxPooling2D(pool_size=(2, 2), name='max1')(inner)  # (None,400, 16, 64)
@@ -83,7 +83,6 @@ def get_Model(training):
     # Keras doesn't currently support loss funcs with extra parameters
     # so CTC loss is implemented in a lambda layer
     loss_out = Lambda(ctc_lambda_func, output_shape=(1,), name='ctc')([y_pred, labels, input_length, label_length]) #(None, 1)
-
     if training:
         return Model(inputs=[inputs, labels, input_length, label_length], outputs=loss_out)
     else:

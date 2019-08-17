@@ -11,11 +11,11 @@ K.set_learning_phase(0)
 
 model = model.get_Model(training=True)
 
-train_file_path = 'D:\\UNIVERSITY\\BACHELOR PROJECT\\Data\\mainDataset\\train\\'
+train_file_path = 'D:\\UNIVERSITY\\BACHELOR PROJECT\\Data\\mainDataset\\smallTrain\\'
 train_gen = data_generator.TextImageGenerator(train_file_path,720,32,16,4)
 train_gen.build_data()
 
-val_file_path = 'D:\\UNIVERSITY\\BACHELOR PROJECT\\Data\\mainDataset\\valid\\'
+val_file_path = 'D:\\UNIVERSITY\\BACHELOR PROJECT\\Data\\mainDataset\\smallValid\\'
 val_gen = data_generator.TextImageGenerator(val_file_path,720,32,16,4)
 val_gen.build_data()
 
@@ -26,12 +26,12 @@ early_stop = EarlyStopping(monitor='loss', min_delta=0.001, patience=4, mode='mi
 #checkpoint = ModelCheckpoint(filepath='LSTM+BN5--{epoch:02d}--{val_loss:.3f}.hdf5', monitor='loss', verbose=1, mode='min', period=1)
 # the loss calc occurs elsewhere, so use a dummy lambda func for the loss
 model.compile(loss={'ctc': lambda y_true, y_pred: y_pred}, optimizer=ada)
-
+model.summary()
 # captures output of softmax so we can decode the output during visualization
 model.fit_generator(generator=train_gen.next_batch(),
                     steps_per_epoch=int(train_gen.n / train_gen.batch_size),
-                    epochs=30,
+                    epochs=100,
                     validation_data=val_gen.next_batch(),
                     validation_steps=int(val_gen.n / val_gen.batch_size),verbose=1)
-
+model.save('D:\\UNIVERSITY\\BACHELOR PROJECT\\model\\model1.h5')
 #%%
