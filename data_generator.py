@@ -1,8 +1,8 @@
 #%%
 from PIL import Image
 import os
-from KNTU_OCR import parameters as p
-from KNTU_OCR import labelize as lb
+import parameters as p
+import labelize as lb
 import numpy as np
 import re
 import random
@@ -18,7 +18,7 @@ class TextImageGenerator:
         self.downsample_factor = downsample_factor
         self.img_dirpath = img_dirpath                  # image dir path
         self.img_dir = os.listdir(self.img_dirpath)     # images list
-        self.n = len(self.img_dir)                      # number of images
+        self.n = len(self.img_dir)//2                      # number of images
         self.indexes = list(range(self.n))
         self.cur_index = 0
         self.imgs = []
@@ -36,11 +36,11 @@ class TextImageGenerator:
             else:
                 txtList.append(file)
         for i in range(len(imageList)):
-            imageArrayCopy = np.asarray(Image.open(self.img_dirpath+imageList[i]).convert(mode = 'L'))
+            imageArrayCopy = np.asarray(Image.open(self.img_dirpath+imageList[i]).convert(mode = 'L').transpose(Image.FLIP_LEFT_RIGHT))
             imageArray = np.copy(imageArrayCopy)
             imageArray = (imageArray / 255.0) * 2.0 - 1.0
             self.imgs.append(imageArray)
-            with open(self.img_dirpath+txtList[i], 'r') as txtFile:
+            with open(self.img_dirpath+txtList[i], 'r' , encoding='utf8') as txtFile:
                 self.texts.append(txtFile.readline().strip())
         print(self.n, " Image Loading finish...")
 
