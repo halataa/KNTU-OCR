@@ -25,6 +25,7 @@ class TextImageGenerator:
         self.cur_index = 0
         self.imgs = []
         self.texts = []
+        
 
 
     ## samples의 이미지 목록들을 opencv로 읽어 저장하기, texts에는 label 저장
@@ -38,10 +39,11 @@ class TextImageGenerator:
             else:
                 txtList.append(file)
         for i in range(len(imageList)):
-            imageArrayCopy = np.asarray(Image.open(self.img_dirpath+imageList[i]))
+            imageArrayCopy = np.asarray(Image.open(self.img_dirpath+imageList[i]).transpose(Image.FLIP_LEFT_RIGHT))
             imageArray = np.copy(imageArrayCopy)
             SC = MinMaxScaler()
-            imageArray = SC.fit_transform(imageArray)
+            SC.fit(imageArray)
+            imageArray = SC.transform(imageArray)
             self.imgs.append(imageArray)
             with open(self.img_dirpath+txtList[i], 'r' , encoding='utf8') as txtFile:
                 self.texts.append(txtFile.readline().strip())
