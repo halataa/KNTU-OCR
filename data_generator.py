@@ -6,6 +6,8 @@ import labelize as lb
 import numpy as np
 import re
 import random
+from sklearn.preprocessing import MinMaxScaler
+
 
 
 class TextImageGenerator:
@@ -36,9 +38,10 @@ class TextImageGenerator:
             else:
                 txtList.append(file)
         for i in range(len(imageList)):
-            imageArrayCopy = np.asarray(Image.open(self.img_dirpath+imageList[i]).convert(mode = 'L').transpose(Image.FLIP_LEFT_RIGHT))
+            imageArrayCopy = np.asarray(Image.open(self.img_dirpath+imageList[i]))
             imageArray = np.copy(imageArrayCopy)
-            imageArray = (imageArray / 255.0) * 2.0 - 1.0
+            SC = MinMaxScaler()
+            imageArray = SC.fit_transform(imageArray)
             self.imgs.append(imageArray)
             with open(self.img_dirpath+txtList[i], 'r' , encoding='utf8') as txtFile:
                 self.texts.append(txtFile.readline().strip())
@@ -50,6 +53,20 @@ class TextImageGenerator:
             self.cur_index = 0
             random.shuffle(self.indexes)
         return self.imgs[self.indexes[self.cur_index]], self.texts[self.indexes[self.cur_index]]
+    
+    def data_checker(self,image,text): # for checking data structure
+        X_data = np.ones([self.img_w, self.img_h, 1])     # (bs, 128, 64, 1)
+        Y_data = np.ones([self.max_text_len])             # (bs, 9)
+        input_length = np.ones((self.batch_size, 1)) * (self.img_w // self.downsample_factor - 2)  # (bs, 1)
+        label_length = np.zeros((self.batch_size, 1))           # (bs, 1)
+        img = image.T
+        img = np.expand_dims(img, -1)
+        X_data = img
+        Y_data[:len(text)] = lb.labeling(text)
+        label_length = len(text)
+        return X_data,Y_data,input_length,label_length
+
+
 
     def next_batch(self):      
         while True:
