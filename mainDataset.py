@@ -9,19 +9,19 @@ import re
 import glob
 import pickle
 import random
-with open("D:\\UNIVERSITY\\BACHELOR PROJECT\\Data\\moinMN.txt", 'rb') as moinFile:
+with open("resources\\moinMN.txt", 'rb') as moinFile:
     moin = pickle.load(moinFile)
 
 # %% font select
 
 def fontSelect(fontNumber):
     fontList = []
-    for file in glob.glob('D:\\UNIVERSITY\\BACHELOR PROJECT\\Data\\fonts\\*.ttf'):
+    for file in glob.glob('resources\\fonts\\*.ttf'):
         fontName = re.findall(r'fonts\\(B .+)\.', file)  # just B series
         fontName = str(fontName[0])
         fontList.append(fontName)
     fontName = fontList[fontNumber]
-    fontDir = 'D:\\UNIVERSITY\\BACHELOR PROJECT\\Data\\fonts\\%s.ttf' % fontName
+    fontDir = 'resources\\fonts\\%s.ttf' % fontName
     return(fontDir, fontName)
 
 
@@ -91,8 +91,8 @@ while len(moin) > 0:
         imageArray = np.concatenate((extraArray, imageArray), axis=1)
         image = Image.fromarray(imageArray*255)
         image.save(
-            "D:\\UNIVERSITY\\BACHELOR PROJECT\\Data\\mainDataset\\kntu%s.png" % imageNumber, mode='L')
-        with open("D:\\UNIVERSITY\\BACHELOR PROJECT\\Data\\mainDataset\\kntu%s.txt" % imageNumber, 'w', encoding='utf8') as txt:
+            "resources\\mainDataset\\kntu%s.png" % imageNumber, mode='L')
+        with open("resources\\mainDataset\\kntu%s.txt" % imageNumber, 'w', encoding='utf8') as txt:
             txt.write('%s \nfont : %s' % (text, fontName))
         mainList.append(text)
         failCount = 0
