@@ -17,44 +17,44 @@ def ctc_lambda_func(args):
     return K.ctc_batch_cost(labels, y_pred, input_length, label_length)
 
 def get_Model(training):
-    input_shape = (p.img_w, p.img_h, 1)     # (800, 32, 1)
+    input_shape = (p.img_w, p.img_h, 1)     # (720, 32, 1)
 
     # Make Networkw
-    inputs = Input(name='the_input', shape=input_shape, dtype='float32')  # (None, 800, 32, 1)
+    inputs = Input(name='the_input', shape=input_shape, dtype='float32')  # (None, 720, 32, 1)
 
     # Convolution layer (VGG)
-    inner = Conv2D(64, (3, 3), padding='same', name='conv1', kernel_initializer='he_normal')(inputs)  # (None, 800, 32, 64)
+    inner = Conv2D(64, (3, 3), padding='same', name='conv1', kernel_initializer='he_normal')(inputs)  # (None, 720, 32, 64)
     inner = BatchNormalization()(inner)
     inner = Activation('relu')(inner)
-    inner = MaxPooling2D(pool_size=(2, 2), name='max1')(inner)  # (None,400, 16, 64)
+    inner = MaxPooling2D(pool_size=(2, 2), name='max1')(inner)  # (None,360, 16, 64)
 
-    inner = Conv2D(128, (3, 3), padding='same', name='conv2', kernel_initializer='he_normal')(inner)  # (None, 64, 32, 128)
+    inner = Conv2D(128, (3, 3), padding='same', name='conv2', kernel_initializer='he_normal')(inner)
     inner = BatchNormalization()(inner)
     inner = Activation('relu')(inner)
-    inner = MaxPooling2D(pool_size=(2, 2), name='max2')(inner)  # (None, 200, 8, 128)
+    inner = MaxPooling2D(pool_size=(2, 2), name='max2')(inner)  # (None, 180, 8, 128)
 
-    inner = Conv2D(256, (3, 3), padding='same', name='conv3', kernel_initializer='he_normal')(inner)  # (None, 32, 16, 256)
+    inner = Conv2D(256, (3, 3), padding='same', name='conv3', kernel_initializer='he_normal')(inner)
     inner = BatchNormalization()(inner)
     inner = Activation('relu')(inner)
-    inner = Conv2D(256, (3, 3), padding='same', name='conv4', kernel_initializer='he_normal')(inner)  # (None, 32, 16, 256)
+    inner = Conv2D(256, (3, 3), padding='same', name='conv4', kernel_initializer='he_normal')(inner)
     inner = BatchNormalization()(inner)
     inner = Activation('relu')(inner)
-    inner = MaxPooling2D(pool_size=(1, 2), name='max3')(inner)  # (None, 200, 4, 256)
+    inner = MaxPooling2D(pool_size=(1, 2), name='max3')(inner)  # (None, 180, 4, 256)
 
-    inner = Conv2D(512, (3, 3), padding='same', name='conv5', kernel_initializer='he_normal')(inner)  # (None, 32, 8, 512)
+    inner = Conv2D(512, (3, 3), padding='same', name='conv5', kernel_initializer='he_normal')(inner)
     inner = BatchNormalization()(inner)
     inner = Activation('relu')(inner)
-    inner = Conv2D(512, (3, 3), padding='same', name='conv6')(inner)  # (None, 32, 8, 512)
+    inner = Conv2D(512, (3, 3), padding='same', name='conv6')(inner)
     inner = BatchNormalization()(inner)
     inner = Activation('relu')(inner)
-    inner = MaxPooling2D(pool_size=(1, 2), name='max4')(inner)  # (None, 200, 2, 512)
+    inner = MaxPooling2D(pool_size=(1, 2), name='max4')(inner)  # (None, 180, 2, 512)
 
-    inner = Conv2D(512, (2, 2), padding='same', kernel_initializer='he_normal', name='con7')(inner)  # (None, 200, 2, 512)
+    inner = Conv2D(512, (2, 2), padding='same', kernel_initializer='he_normal', name='con7')(inner)
     inner = BatchNormalization()(inner)
     inner = Activation('relu')(inner)
 
     # CNN to RNN
-    inner = Reshape(target_shape=((180, 1024)), name='reshape')(inner)  # (None, 32, 2048)
+    inner = Reshape(target_shape=((180, 1024)), name='reshape')(inner)  # (None, 180,1024)
     #inner = Dense(64, activation='relu', kernel_initializer='he_normal', name='dense1')(inner)  # (None, 32, 64)
 
     # RNN layer

@@ -30,7 +30,7 @@ def labeling(text):
     sep = letterSeperator(text)
     for l in sep:
         labelList.append(alphabetList.index(l))
-    return labelList
+    return np.array(labelList)
     
 
 #%% letter seperator

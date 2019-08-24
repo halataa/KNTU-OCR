@@ -64,7 +64,7 @@ class TextImageGenerator:
         img = image.T
         img = np.expand_dims(img, -1)
         X_data = img
-        Y_data[:len(text)] = lb.labeling(text)
+        Y_data = lb.labeling(text)
         label_length = len(text)
         return X_data,Y_data,input_length,label_length
 
@@ -73,7 +73,7 @@ class TextImageGenerator:
     def next_batch(self):      
         while True:
             X_data = np.ones([self.batch_size, self.img_w, self.img_h, 1])     # (bs, 128, 64, 1)
-            Y_data = np.ones([self.batch_size, self.max_text_len])             # (bs, 9)
+            Y_data = list()             # (bs, 9)
             input_length = np.ones((self.batch_size, 1)) * (self.img_w // self.downsample_factor - 2)  # (bs, 1)
             label_length = np.zeros((self.batch_size, 1))           # (bs, 1)
 
@@ -82,9 +82,9 @@ class TextImageGenerator:
                 img = img.T
                 img = np.expand_dims(img, -1)
                 X_data[i] = img
-                Y_data[i][:len(text)] = lb.labeling(text)
+                Y_data.append(lb.labeling(text))
                 label_length[i] = len(text)
-
+            Y_data = np.array(Y_data)
             
             inputs = {
                 'the_input': X_data,  
