@@ -75,11 +75,11 @@ def padding_image(img, max_len, pad_value=255):
     image = Image.fromarray(image_array)
     return image
 
-def noise_image(img): # image arrray values shoulde be between 0 and 1
+def noise_image(img,intensity=0.6): # image arrray values shoulde be between 0 and 1
     img = np.array(img)
     max_array = np.max(img)
     img = img/max_array
-    severity = np.random.uniform(0, 0.6)
+    severity = np.random.uniform(0, intensity)
     blur = ndimage.gaussian_filter(np.random.randn(*img.shape) * severity, 1)
     img_speck = (img + blur)
     img_speck[img_speck > 1] = 1

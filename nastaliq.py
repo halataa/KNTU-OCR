@@ -11,14 +11,15 @@ import sys
 import random
 
 BASE_IMAGE_SIZE = (100, 32)
+driver = webdriver.Chrome()
 #%%
 def fetch_nastaliq(text='برای تست'):
 
-    driver = webdriver.Chrome()
+
     driver.get('http://nastaliqonline.ir/')
 
     selectSize = Select(driver.find_element_by_id('xcolor1'))
-    selectSize.select_by_visible_text('50')
+    selectSize.select_by_visible_text('70')
     selectFont = Select(driver.find_element_by_name('coli'))
     selectFont.select_by_value('0')  # 0 is Regular Nastaliq
     driver.find_element_by_name('shadow').click()
@@ -32,7 +33,7 @@ def fetch_nastaliq(text='برای تست'):
 
     imageName = 'resources\\temprory.png'
     driver.save_screenshot(imageName)
-    driver.close()
+    driver.execute_script("window.history.go(-1)")
     image = Image.open(imageName)
 
     return image
@@ -51,7 +52,7 @@ def adjust_nastaliq(image):
     Y = np.where(Y > 14)
     cropBox = [np.min(Y), np.max(Y), np.min(X), np.max(X)]
     croppedArray = gray_copy[cropBox[0]:cropBox[1]+1, cropBox[2]:cropBox[3]+1]
-    garbageCordinate = (45, 150)  # site text cordinates
+    garbageCordinate = (45, croppedArray.shape[1])  # site text cordinates
     for x in range(garbageCordinate[0]):
         for y in range(garbageCordinate[1]):
             if croppedArray[x, y] < 240 and croppedArray[x, y] > 30:
@@ -74,8 +75,8 @@ def make_nastaliq_data(word_list,num,save_dir,noise_ratio = 0.5,index=0):
             word = word_list.pop(random.randrange(len(word_list)))
             word_image = adjust_nastaliq(fetch_nastaliq(word))
             word_image = crop_image(word_image,tr=100)
-            random_height = np.random.randint(20, 31)
-            resized_word_image = resize_image(word_image,32)
+            random_height = np.random.randint(30, 31)
+            resized_word_image = resize_image(word_image,random_height)
             background_img = Image.new('L', BASE_IMAGE_SIZE, color='white')
             rwi_size = resized_word_image.size
             if BASE_IMAGE_SIZE[0]>rwi_size[0]:
@@ -83,16 +84,16 @@ def make_nastaliq_data(word_list,num,save_dir,noise_ratio = 0.5,index=0):
                 rand_Y = np.random.randint(0, BASE_IMAGE_SIZE[1] - rwi_size[1]+1)
                 background_img.paste(resized_word_image,(rand_X,rand_Y))
                 if index >= noise_ratio*num:
-                    background_img.save(save_dir+'kntu'+'%s'%(index+1)+'.png')
+                    background_img.save(save_dir+'kntu'+'%s'%(str(index+1).zfill(5))+'.png')
                     # train_line = word+'\n'
-                    with open(save_dir+"kntu%s.txt" %(index+1), 'w', encoding='utf8') as txt:
+                    with open(save_dir+"kntu%s.txt" %(str(index+1).zfill(5)), 'w', encoding='utf8') as txt:
                         txt.write('%s \nfont : %s' % (word, 'fontName')) 
 
                 else:
-                    final_image = noise_image(background_img)
-                    final_image.save(save_dir+'kntu'+'%s'%(index+1)+'.png')
+                    final_image = noise_image(background_img,0.4)
+                    final_image.save(save_dir+'kntu'+'%s'%(str(index+1).zfill(5))+'.png')
                     #  train_line = word+'\n'
-                    with open(save_dir+"kntu%s.txt" %(index+1), 'w', encoding='utf8') as txt:
+                    with open(save_dir+"kntu%s.txt" %(str(index+1).zfill(5)), 'w', encoding='utf8') as txt:
                         txt.write('%s \nfont : %s' % (word, 'fontName')) 
                     
 
@@ -100,17 +101,18 @@ def make_nastaliq_data(word_list,num,save_dir,noise_ratio = 0.5,index=0):
                 # train_file.writelines(train_line)
                 index += 1
                 saved += 1
-            if saved % int(num/toolbar_width)==0:
+            if saved % (int(num/toolbar_width)+1)==1:
                sys.stdout.write("#")
                sys.stdout.flush()
     sys.stdout.write("]\n")
     # train_file.close()
     print('done')
 #%%
-with open("resources\\nastaliq.txt", 'rb') as moinFile:
-    nast_list = pickle.load(moinFile)
+if __name__ == "__main__":
+    with open("resources\\nastaliq.txt", 'rb') as moinFile:
+        nast_list = pickle.load(moinFile)
 
-make_nastaliq_data(nast_list,100,'resources\\datasets\\nastaliq\\')
+    make_nastaliq_data(nast_list,2000,'resources\\datasets\\nastaliq\\',noise_ratio=0.5)
 
 
 #%%
