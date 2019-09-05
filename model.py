@@ -1,10 +1,11 @@
 from keras import backend as K
 from keras.layers import Conv2D, MaxPooling2D
-from keras.layers import Input, Dense, Activation
+from keras.layers import Input, Dense, Activation, Bidirectional,TimeDistributed
 from keras.layers import Reshape, Lambda, BatchNormalization
 from keras.layers.merge import add, concatenate
 from keras.models import Model
 from keras.layers.recurrent import LSTM
+import numpy as np
 import parameters as p
 
 K.set_learning_phase(0)
@@ -26,54 +27,44 @@ def get_Model(training):
     inner = Conv2D(64, (3, 3), padding='same', name='conv1', kernel_initializer='he_normal')(inputs)  # (None, 720, 32, 64)
     inner = BatchNormalization()(inner)
     inner = Activation('relu')(inner)
-    inner = MaxPooling2D(pool_size=(2, 2), name='max1')(inner)  # (None,360, 16, 64)
+    inner = MaxPooling2D(pool_size=(2, 2), name='max1')(inner)  # (None,400, 16, 64)
 
-    inner = Conv2D(128, (3, 3), padding='same', name='conv2', kernel_initializer='he_normal')(inner)
+    inner = Conv2D(128, (3, 3), padding='same', name='conv2', kernel_initializer='he_normal')(inner)  # (None, 64, 32, 128)
     inner = BatchNormalization()(inner)
     inner = Activation('relu')(inner)
-    inner = MaxPooling2D(pool_size=(2, 2), name='max2')(inner)  # (None, 180, 8, 128)
+    inner = MaxPooling2D(pool_size=(2, 2), name='max2')(inner)  # (None, 200, 8, 128)
 
-    inner = Conv2D(256, (3, 3), padding='same', name='conv3', kernel_initializer='he_normal')(inner)
+    inner = Conv2D(256, (3, 3), padding='same', name='conv3', kernel_initializer='he_normal')(inner)  # (None, 32, 16, 256)
     inner = BatchNormalization()(inner)
     inner = Activation('relu')(inner)
-    inner = Conv2D(256, (3, 3), padding='same', name='conv4', kernel_initializer='he_normal')(inner)
+    inner = Conv2D(256, (3, 3), padding='same', name='conv4', kernel_initializer='he_normal')(inner)  # (None, 32, 16, 256)
     inner = BatchNormalization()(inner)
     inner = Activation('relu')(inner)
-    inner = MaxPooling2D(pool_size=(1, 2), name='max3')(inner)  # (None, 180, 4, 256)
+    inner = MaxPooling2D(pool_size=(1, 2), name='max3')(inner)  # (None, 200, 4, 256)
 
-    inner = Conv2D(512, (3, 3), padding='same', name='conv5', kernel_initializer='he_normal')(inner)
+    inner = Conv2D(512, (3, 3), padding='same', name='conv5', kernel_initializer='he_normal')(inner)  # (None, 32, 8, 512)
     inner = BatchNormalization()(inner)
     inner = Activation('relu')(inner)
-    inner = Conv2D(512, (3, 3), padding='same', name='conv6')(inner)
+    inner = Conv2D(512, (3, 3), padding='same', name='conv6')(inner)  # (None, 32, 8, 512)
     inner = BatchNormalization()(inner)
     inner = Activation('relu')(inner)
-    inner = MaxPooling2D(pool_size=(1, 2), name='max4')(inner)  # (None, 180, 2, 512)
+    inner = MaxPooling2D(pool_size=(1, 2), name='max4')(inner)  # (None, 200, 2, 512)
 
-    inner = Conv2D(512, (2, 2), padding='same', kernel_initializer='he_normal', name='con7')(inner)
+    inner = Conv2D(512, (2, 2), padding='same', kernel_initializer='he_normal', name='con7')(inner)  # (None, 200, 2, 512)
     inner = BatchNormalization()(inner)
     inner = Activation('relu')(inner)
 
+    shape = inner._keras_shape
     # CNN to RNN
-    inner = Reshape(target_shape=((180, 1024)), name='reshape')(inner)  # (None, 180,1024)
-    #inner = Dense(64, activation='relu', kernel_initializer='he_normal', name='dense1')(inner)  # (None, 32, 64)
+    inner = Reshape(target_shape=((shape[1], 1024)), name='reshape')(inner)  # (None, 32, 2048)
+    inner = Dense(256, activation='relu', kernel_initializer='he_normal', name='dense1')(inner)  # (None, 32, 64)
 
     # RNN layer
-    lstm_1 = LSTM(256, return_sequences=True, kernel_initializer='he_normal', name='lstm1')(inner)  # (None, 32, 512)
-    lstm_1b = LSTM(256, return_sequences=True, go_backwards=True, kernel_initializer='he_normal', name='lstm1_b')(inner)
-    reversed_lstm_1b = Lambda(lambda inputTensor: K.reverse(inputTensor, axes=1)) (lstm_1b)
-
-    lstm1_merged = add([lstm_1, reversed_lstm_1b])  # (None, 32, 512)
-    lstm1_merged = BatchNormalization()(lstm1_merged)
-    
-    lstm_2 = LSTM(256, return_sequences=True, kernel_initializer='he_normal', name='lstm2')(lstm1_merged)
-    lstm_2b = LSTM(256, return_sequences=True, go_backwards=True, kernel_initializer='he_normal', name='lstm2_b')(lstm1_merged)
-    reversed_lstm_2b= Lambda(lambda inputTensor: K.reverse(inputTensor, axes=1)) (lstm_2b)
-
-    lstm2_merged = concatenate([lstm_2, reversed_lstm_2b])  # (None, 32, 1024)
-    lstm2_merged = BatchNormalization()(lstm2_merged)
+    blstm1 = Bidirectional(LSTM(256,return_sequences=True,kernel_initializer='he_normal',name='blstm1'))(inner)
+    blstm2 = Bidirectional(LSTM(256,return_sequences=True,kernel_initializer='he_normal',name='blstm2'))(blstm1)
 
     # transforms RNN output to character activations:
-    inner = Dense(p.num_classes, kernel_initializer='he_normal',name='dense2')(lstm2_merged) #(None, 32, 63)
+    inner = TimeDistributed(Dense(p.num_classes, kernel_initializer='he_normal',name='dense2'))(blstm2) #(None, 32, 63)
     y_pred = Activation('softmax', name='softmax')(inner)
 
     labels = Input(name='the_labels', shape=[p.max_text_len], dtype='float32') # (None ,8)
@@ -83,7 +74,6 @@ def get_Model(training):
     # Keras doesn't currently support loss funcs with extra parameters
     # so CTC loss is implemented in a lambda layer
     loss_out = Lambda(ctc_lambda_func, output_shape=(1,), name='ctc')([y_pred, labels, input_length, label_length]) #(None, 1)
-
     if training:
         return Model(inputs=[inputs, labels, input_length, label_length], outputs=loss_out)
     else:
