@@ -4,7 +4,7 @@ import pandas as pd
 import pickle
 import random
 import re
-from KNTU_OCR import labelize as lb
+import labelize as lb
 
 text_data_directory = 'resources\\'
 df = pd.read_excel(text_data_directory+'Persian Words.xlsx')

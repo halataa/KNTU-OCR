@@ -20,8 +20,8 @@ def  e_connects_with_letters_before_and_after(let) :
 
 #%%
 import pickle
-with open('resources\\alphabetList.txt','rb') as file:
-    alphabetList = pickle.load(file)
+with open ('alphabetList.txt','rb') as file:
+    alphabetList=pickle.load(file)
 
 #%%
 import numpy as np
@@ -30,7 +30,7 @@ def labeling(text):
     sep = letterSeperator(text)
     for l in sep:
         labelList.append(alphabetList.index(l))
-    return np.array(labelList)
+    return labelList
     
 
 #%% letter seperator
