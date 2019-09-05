@@ -1,6 +1,6 @@
 import pickle
 
-with open ('alphabetList.txt','rb') as file:
+with open ('rseources\\alphabetList.txt','rb') as file:
     alphabetList=pickle.load(file)
 
 num_classes = len(alphabetList) + 1
