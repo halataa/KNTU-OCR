@@ -43,10 +43,10 @@ def create_image(text, font_dir):
     return (img)
 
 
-def crop_image(img):
+def crop_image(img,tr=255):
     image_data = np.asarray(img)
-    non_empty_columns = np.where(image_data.min(axis=0) < 255)[0]
-    non_empty_rows = np.where(image_data.min(axis=1) < 255)[0]
+    non_empty_columns = np.where(image_data.min(axis=0) < tr)[0]
+    non_empty_rows = np.where(image_data.min(axis=1) < tr)[0]
     cropBox = (min(non_empty_rows), max(non_empty_rows),
                min(non_empty_columns), max(non_empty_columns))
     image_data_new = image_data[cropBox[0]
@@ -75,11 +75,11 @@ def padding_image(img, max_len, pad_value=255):
     image = Image.fromarray(image_array)
     return image
 
-def noise_image(img): # image arrray values shoulde be between 0 and 1
+def noise_image(img,intensity=0.6): # image arrray values shoulde be between 0 and 1
     img = np.array(img)
     max_array = np.max(img)
     img = img/max_array
-    severity = np.random.uniform(0, 0.6)
+    severity = np.random.uniform(0, intensity)
     blur = ndimage.gaussian_filter(np.random.randn(*img.shape) * severity, 1)
     img_speck = (img + blur)
     img_speck[img_speck > 1] = 1
@@ -90,9 +90,7 @@ def noise_image(img): # image arrray values shoulde be between 0 and 1
     return final_image
 
 
-def make_data(num,save_dir,noise_ratio = 0.5,index=0):
-    with open("resources\\moinMN.txt", 'rb') as moinFile:
-        moin = pickle.load(moinFile)
+def make_data(word_list,num,save_dir,noise_ratio = 0.5,index=0):
     print('buldind %s images...'%num)
     toolbar_width = 40
     sys.stdout.write("[%s]" % (" " * toolbar_width))
@@ -102,7 +100,7 @@ def make_data(num,save_dir,noise_ratio = 0.5,index=0):
     saved = 0
     for _ in range(num):
         while saved != num:
-            word = moin.pop(random.randrange(len(moin)))
+            word = word_list.pop(random.randrange(len(word_list)))
             font_index = index % 19
             word_image = create_image(word, font_select(font_index)[0])
             word_image = crop_image(word_image)
@@ -116,14 +114,14 @@ def make_data(num,save_dir,noise_ratio = 0.5,index=0):
                 background_img.paste(resized_word_image,(rand_X,rand_Y))
                 if index >= noise_ratio*num:
                     background_img.save(save_dir+'kntu'+'%s'%(index+1)+'.png')
-                    #train_line = word+'\n'
+                    # train_line = word+'\n'
                     with open(save_dir+"kntu%s.txt" %(index+1), 'w', encoding='utf8') as txt:
                         txt.write('%s \nfont : %s' % (word, 'fontName')) 
 
                 else:
                     final_image = noise_image(background_img)
                     final_image.save(save_dir+'kntu'+'%s'%(index+1)+'.png')
-                    #train_line = word+'\n'
+                    #  train_line = word+'\n'
                     with open(save_dir+"kntu%s.txt" %(index+1), 'w', encoding='utf8') as txt:
                         txt.write('%s \nfont : %s' % (word, 'fontName')) 
                     
@@ -141,7 +139,8 @@ def make_data(num,save_dir,noise_ratio = 0.5,index=0):
 
 
 #%%
-make_data(22672,'resources\\datasets\\noisy_word\\train\\',0.5,27238)
-make_data(5000,'resources\\datasets\\noisy_word\\valid\\',0.5,50000)
+if __name__ == "__main__":
+    make_data(moin,22672,'resources\\datasets\\noisy_word\\train\\',0.5,27238)
+    make_data(moin,5000,'resources\\datasets\\noisy_word\\valid\\',0.5,50000)
 
 
