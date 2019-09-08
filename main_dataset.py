@@ -141,7 +141,7 @@ def make_data(num,save_dir,noise_ratio = 0.5,index=0):
 
 
 #%%
-make_data(22672,'resources\\datasets\\noisy_word\\train\\',0.5,27238)
-make_data(5000,'resources\\datasets\\noisy_word\\valid\\',0.5,50000)
+# make_data(22672,'resources\\datasets\\noisy_word\\train\\',0.5,27238)
+# make_data(5000,'resources\\datasets\\noisy_word\\valid\\',0.5,50000)
 
 

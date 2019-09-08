@@ -112,7 +112,7 @@ if __name__ == "__main__":
     with open("resources\\nastaliq.txt", 'rb') as moinFile:
         nast_list = pickle.load(moinFile)
 
-    make_nastaliq_data(nast_list,2000,'resources\\datasets\\nastaliq\\',noise_ratio=0.5)
+    make_nastaliq_data(nast_list,2000,'resources\\datasets\\nastaliq\\',noise_ratio=0.3)
 
 
 #%%

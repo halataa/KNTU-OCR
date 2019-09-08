@@ -117,6 +117,6 @@ def predict (dir='C:\\Users\\Ali\\Documents\\Uni\\Projects\\OCR\\real ocr\\resou
     return(finalList[0][0]) 
 
 
-predict('C:\\Users\\Ali\\Documents\\Uni\\Projects\\OCR\\real ocr\\resources\\datasets\\test_dataset\\kntu1.png')
+predict('resources\\for presentation\\cnn images\\kntu48333.png')
 
 #%%
