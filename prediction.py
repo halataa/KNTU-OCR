@@ -13,7 +13,7 @@ miniModel = model.get_Model(training=False)
 miniModel.load_weights('models\\6-11[17-54]__Model\\bestModel.h5')
 
 #%%
-with open('alphabetList.txt','rb') as file:
+with open('resources\\alphabetList.txt','rb') as file:
     alphabetList = pickle.load(file)
 #%%
 def single_test(imagePath):
@@ -76,7 +76,7 @@ def decode_predict_ctc(out, top_paths = 1):
       results.append(lables)
     return results
 #%%
-testScaled = single_test('resources\\test.png')
+testScaled = single_test('resources\\circle.png')
 prediction = miniModel.predict(testScaled)
 output=decode_predict_ctc(prediction)
 predList = pred_list(prediction)
