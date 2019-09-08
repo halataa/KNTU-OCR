@@ -20,8 +20,8 @@ def  e_connects_with_letters_before_and_after(let) :
 
 #%%
 import pickle
-with open('D:\\UNIVERSITY\\BACHELOR PROJECT\\Data\\alphabetList.txt','rb') as file:
-    alphabetList = pickle.load(file)
+with open ('alphabetList.txt','rb') as file:
+    alphabetList=pickle.load(file)
 
 #%%
 import numpy as np
