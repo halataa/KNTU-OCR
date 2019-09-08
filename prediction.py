@@ -12,10 +12,12 @@ from numpy import array
 from numpy import argmax
 import json
 import operator
+from word_detection import *
 
 
 miniModel = model.get_Model(training=False)
 miniModel.load_weights('models\\6-11[17-54]__Model\\bestModel.h5')
+
 with open("resources\\moinMN.txt", 'rb') as moinFile:
     moin = pickle.load(moinFile)
 
@@ -24,29 +26,39 @@ with open('resources\\alphabetList.txt', 'rb',) as file:
 alphabetList.append('-')
 
 alphabetDict=json.load(open('resources\\alphabetDict.txt'))
+#%%
 
-
-def single_test(imagePath):
-    image = Image.open(imagePath)
-    image = image.convert(mode='L')
-    testArray = np.asarray(image.transpose(Image.FLIP_LEFT_RIGHT))
-    SC = MinMaxScaler()
-    testScaled = SC.fit_transform(testArray)
-    testScaled = testScaled.T
-    testScaled = np.expand_dims(testScaled, axis=-1)
-    testScaled = np.expand_dims(testScaled, axis=0)
+def single_test(image_path_or_array):
+    if isinstance(image_path_or_array, str):
+        image = Image.open(imagePath)
+        image = image.convert(mode='L')
+        testArray = np.asarray(image.transpose(Image.FLIP_LEFT_RIGHT))
+        SC = MinMaxScaler()
+        testScaled = SC.fit_transform(testArray)
+        testScaled = testScaled.T
+        testScaled = np.expand_dims(testScaled, axis=-1)
+        testScaled = np.expand_dims(testScaled, axis=0)
+    else:
+        image = np.fliplr(image_path_or_array)
+        SC = MinMaxScaler()
+        testScaled = SC.fit_transform(image)
+        testScaled = testScaled.T
+        testScaled = np.expand_dims(testScaled, axis=-1)
+        testScaled = np.expand_dims(testScaled, axis=0)
     return testScaled
 
+def raw_CTC(preds):
 
-def predict_with_dic(prediction):
-    top_paths = 3
-    results = []
-    out = prediction
-    for i in range(top_paths):
-        lables = K.get_value(K.ctc_decode(out, input_length=np.ones(out.shape[0])*out.shape[1],
-                                          greedy=False, beam_width=top_paths, top_paths=top_paths)[0][i])[0]
-        results.append(lables)
-    return results
+    raw_preds = []
+    for pred in preds:
+        raw_pred = []
+        for t in pred:
+            let_index = np.argmax(t)
+            let = alphabetList[let_index]
+            raw_pred.append(let)
+        raw_preds.append(raw_pred)
+    return raw_preds
+
 
 
 def beam_search_decoder(data, k):
@@ -67,56 +79,85 @@ def beam_search_decoder(data, k):
     return sequences
 
 
-def decode_CTC(predList):
-    wordList = []
-    for item in predList:
-        char =alphabetDict[alphabetList[item]]
-        wordList.append(char)
+def decode_CTC(raw_CTC):
+    decoded = []
+    for item in raw_CTC:
         finalList = []
-        kalame = ''
-    for i in range(1, len(wordList)-1):
-        if wordList[i] == wordList[i+1] and wordList[i] != wordList[i-1]:
-            finalList.append(wordList[i])
-        if wordList[i] != wordList[i+1] and wordList[i] != wordList[i-1]:
-            finalList.append(wordList[i])
-    if wordList[-1] != wordList[-2]:
-        finalList.append(wordList[-1])
-    for item in finalList:
-        if item != '-':
-            kalame += item
-    return (kalame)
+        word = ''
+        for i in range(1, len(item)-1):
+            if item[i] == item[i+1] and item[i] != item[i-1]:
+                finalList.append(item[i])
+            if item[i] != item[i+1] and item[i] != item[i-1]:
+                finalList.append(item[i])
+        if item[-1] != item[-2]:
+            finalList.append(item[-1])
+        for item in finalList:
+            if item != '-':
+                word += item
+        decoded.append(word)
+    return decoded
 
 
-# %%
-def predict (dir='C:\\Users\\Ali\\Documents\\Uni\\Projects\\OCR\\real ocr\\resources\\datasets\\test_dataset\\kntu45.png',photoNumber='21',dictionary_influence=1.2):
-    
-    testScaled = single_test(dir)
-    prediction = miniModel.predict(testScaled)
-    # a=predict_with_dic(prediction)
-    data = prediction.squeeze()
-    data = np.where(data == 1, 0.999, data)
-    result = beam_search_decoder(data, 5)
-    finalList = []
-    probs = []
-    words = []
-    for list_and_prob in result:
-        predList = list_and_prob[0]
-        prob = -log10(list_and_prob[1])
-        probs.append(prob)
-        word = decode_CTC(predList)
-        words.append(word)
-    probs = list(map(lambda x: x/max(probs), probs))
-    for i in range(len(words)):
-        finalList.append([words[i], probs[i]])
+def dict_assist(predictions,dictionary_influence=1.05,ret_list=False,pred_per_word = 5):
+    assisteds = []
+    for prediction in predictions:
+        data = prediction.squeeze()
+        data = np.where(data == 1, 0.999, data)
+        result = beam_search_decoder(data, pred_per_word)
+        finalList = []
+        probs = []
+        words = []
+        for list_and_prob in result:
+            predList =list_and_prob[0]
+            prob = -log10(list_and_prob[1])
+            probs.append(prob)
+            wordList = []
+            for item in predList:
+                char = alphabetDict[alphabetList[item]]
+                wordList.append(char)
+            word = decode_CTC([wordList])
+            words.append(word[0])
+        probs = list(map(lambda x: x/max(probs), probs))
+        for i in range(len(words)):
+            finalList.append([words[i], probs[i]])
 
 
-    for List in finalList:
-        if List[0] in moin:
-            List[1]=List[1]*dictionary_influence
-    finalList.sort(key=operator.itemgetter(1),reverse=True)
-    return(finalList[0][0]) 
+        for List in finalList:
+            if List[0] in moin:
+                List[1]=List[1]*dictionary_influence
+        finalList.sort(key=operator.itemgetter(1),reverse=True)
+        prediction = finalList[0][0]
+
+        if ret_list:
+            assisteds.append(finalList)
+        else:
+            assisteds.append(prediction)
+
+    return assisteds 
+
+def OCR(images,assisted=False):
+    scaled_images = []
+    for image in images:
+        scaled_image = single_test(image)
+        scaled_images.append(scaled_image[0])
+    scaled_images = np.array(scaled_images)
+    preds = miniModel.predict(scaled_images)
+    if assisted:
+        words = dict_assist(preds)
+        line = ' '.join(reversed(words))
+    else:
+        raw_preds = raw_CTC(preds)
+        words = decode_CTC(raw_preds)
+        line = ' '.join(reversed(words))
+    return line
 
 
-predict('resources\\for presentation\\cnn images\\kntu48333.png')
+#%%
+image_path = "D:\\line\\line.jpg"
+lines = detect_lines(image_path)
+words = get_words(lines)
+pad = padded_words(words[6])
+simple = OCR(pad)
+assisted = OCR(pad,assisted=True)
 
 #%%

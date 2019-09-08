@@ -97,7 +97,7 @@ def padded_words(word_image_list):
             image = cv2.resize(image,(nw,nh))
             back[:image.shape[0],:]= image
             word_padded = back
-        ret,thresh1 = cv2.threshold(word_padded,80,255,cv2.THRESH_BINARY_INV)
+        ret,thresh1 = cv2.threshold(word_padded,100,255,cv2.THRESH_BINARY_INV)
         final_list.append(thresh1)
     return final_list
 
