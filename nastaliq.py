@@ -109,10 +109,9 @@ def make_nastaliq_data(word_list,num,save_dir,noise_ratio = 0.5,index=0):
     print('done')
 #%%
 if __name__ == "__main__":
-    with open("resources\\nastaliq.txt", 'rb') as moinFile:
+    with open("resources\\moinMN.txt", 'rb') as moinFile:
         nast_list = pickle.load(moinFile)
-
-    make_nastaliq_data(nast_list,2000,'resources\\datasets\\nastaliq\\',noise_ratio=0.5,index=4530)
+    make_nastaliq_data(nast_list,20000,'resources\\datasets\\nastaliq\\',noise_ratio=0.5,index=12122)
 
 
 #%%

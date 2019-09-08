@@ -28,7 +28,6 @@ class TextImageGenerator:
         
 
 
-    ## samples의 이미지 목록들을 opencv로 읽어 저장하기, texts에는 label 저장
     def build_data(self):
         print(self.n, " Image Loading start...")
         imageList = []
@@ -41,13 +40,12 @@ class TextImageGenerator:
         for i in range(len(imageList)):
             imageArrayCopy = np.asarray(Image.open(self.img_dirpath+imageList[i]).transpose(Image.FLIP_LEFT_RIGHT))
             imageArray = np.copy(imageArrayCopy)
-            SC = MinMaxScaler()
-            SC.fit(imageArray)
-            imageArray = SC.transform(imageArray)
+            imageArray = imageArray/255.
             self.imgs.append(imageArray)
             with open(self.img_dirpath+txtList[i], 'r' , encoding='utf8') as txtFile:
                 self.texts.append(txtFile.readline().strip())
         print(self.n, " Image Loading finish...")
+
 
     def next_sample(self):      ## index max -> 0 으로 만들기
         self.cur_index += 1
@@ -56,19 +54,6 @@ class TextImageGenerator:
             random.shuffle(self.indexes)
         return self.imgs[self.indexes[self.cur_index]], self.texts[self.indexes[self.cur_index]]
     
-    def data_checker(self,image,text): # for checking data structure
-        X_data = np.ones([self.img_w, self.img_h, 1])     # (bs, 128, 64, 1)
-        Y_data = np.ones([self.max_text_len])             # (bs, 9)
-        input_length = np.ones((self.batch_size, 1)) * (self.img_w // self.downsample_factor - 2)  # (bs, 1)
-        label_length = np.zeros((self.batch_size, 1))           # (bs, 1)
-        img = image.T
-        img = np.expand_dims(img, -1)
-        X_data = img
-        Y_data = lb.labeling(text)
-        label_length = len(text)
-        return X_data,Y_data,input_length,label_length
-
-
 
     def next_batch(self):      
         while True:
