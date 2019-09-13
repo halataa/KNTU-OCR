@@ -16,7 +16,7 @@ def single_test(imagePath):
     return testScaled
 
 model = get_Model(False)
-model.load_weights('models\\7-9-2019 model\\bestModel.h5')
+model.load_weights('models\\6-21[12-28]__Model\\bestValModel.h5')
 def ax (layer_name = 'conv1',chanta=64):
     img=single_test('resources\\for presentation\\cnn images\\kntu48333.png')
     intermediate_layer_model = Model(inputs=model.input,outputs=model.get_layer(layer_name).output)
@@ -44,11 +44,11 @@ list2=[]
 import pickle
 import matplotlib.pyplot as plt
 import matplotlib.style as style
-with open ('models\\6-18[13-57]__Model for plot\\loss_history.txt','r') as file:
+with open ('models\\6-20[21-25]__Model\\loss_history.txt','r') as file:
     for line in file:
         amir=line.strip()
         list1.append(float(amir))
-with open ('models\\6-18[13-57]__Model for plot\\val_loss_history.txt','r') as file:
+with open ('models\\6-20[21-25]__Model\\val_loss_history.txt','r') as file:
     for line in file:
         amir2=line.strip()
         list2.append(float(amir2))

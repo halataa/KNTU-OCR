@@ -90,19 +90,22 @@ def noise_image(img,intensity=0.6): # image arrray values shoulde be between 0 a
     return final_image
 
 
-def make_data(num,save_dir,noise_ratio = 0.5,index=0):
-    with open("resources\\moinMN.txt", 'rb') as moinFile:
-        moin = pickle.load(moinFile)
+def make_data(word_list,num,save_dir,noise_ratio = 0.5,index=0):
+
     print('buldind %s images...'%num)
     toolbar_width = 40
     sys.stdout.write("[%s]" % (" " * toolbar_width))
     sys.stdout.flush()
     sys.stdout.write("\b" * (toolbar_width+1)) # return to start of line, after '['
-    # train_file = open(save_dir+'data.txt','w',encoding='utf-8')
     saved = 0
+    pun = ['،','.']
     for _ in range(num):
         while saved != num:
-            word = moin.pop(random.randrange(len(moin)))
+            word = word_list.pop(random.randrange(len(word_list)))
+            j = random.randrange(1,11)
+            if j % 10 == 2:
+                s = random.choice(pun)
+                word = word+s     
             font_index = index % 19
             word_image = create_image(word, font_select(font_index)[0])
             word_image = crop_image(word_image)
@@ -114,34 +117,34 @@ def make_data(num,save_dir,noise_ratio = 0.5,index=0):
                 rand_X = np.random.randint(0, BASE_IMAGE_SIZE[0] - rwi_size[0])
                 rand_Y = np.random.randint(0, BASE_IMAGE_SIZE[1] - rwi_size[1])
                 background_img.paste(resized_word_image,(rand_X,rand_Y))
-                if index >= noise_ratio*num:
-                    background_img.save(save_dir+'kntu'+'%s'%(index+1)+'.png')
-                    train_line = word+'\n'
-                    with open(save_dir+"kntu%s.txt" %(index+1), 'w', encoding='utf8') as txt:
+                if saved >= noise_ratio*num:
+                    background_img.save(save_dir+'kntu'+'%s'%(str(index+1).zfill(6))+'.png')
+                    with open(save_dir+"kntu%s.txt" %(str(index+1).zfill(6)), 'w', encoding='utf8') as txt:
+                        if j % 10 == 2:
+                            pass
                         txt.write('%s \nfont : %s' % (word, 'fontName')) 
-
                 else:
                     final_image = noise_image(background_img)
-                    final_image.save(save_dir+'kntu'+'%s'%(index+1)+'.png')
-                    train_line = word+'\n'
-                    with open(save_dir+"kntu%s.txt" %(index+1), 'w', encoding='utf8') as txt:
+                    final_image.save(save_dir+'kntu'+'%s'%(str(index+1).zfill(6))+'.png')
+                    with open(save_dir+"kntu%s.txt" %(str(index+1).zfill(6)), 'w', encoding='utf8') as txt:
+                        if j % 10 == 2:
+                            pass
                         txt.write('%s \nfont : %s' % (word, 'fontName')) 
-                    
-
-
-                # train_file.writelines(train_line)
                 index += 1
                 saved += 1
             if saved % int(num/toolbar_width)==0:
                sys.stdout.write("#")
                sys.stdout.flush()
     sys.stdout.write("]\n")
-    # train_file.close()
     print('done')
 
 
 #%%
-# make_data(22672,'resources\\datasets\\noisy_word\\train\\',0.5,27238)
-# make_data(5000,'resources\\datasets\\noisy_word\\valid\\',0.5,50000)
+if __name__ == "__main__":
+    make_data(moin,10000,'resources\\datasets\\new_pun\\valid\\',0.5,100000)
+    # make_data(moin,2000,'resources\\datasets\\new_pun\\valid\\',0.5,76088)
 
 
+
+
+#%%
