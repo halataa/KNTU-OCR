@@ -16,7 +16,7 @@ from word_detection import *
 
 #%%
 miniModel = model.get_Model(training=False)
-miniModel.load_weights('models\\bestValModel.h5')
+miniModel.load_weights('models\\6-21[12-28]__Model\\bestAccModel.h5')
 
 with open("resources\\moinMN.txt", 'rb') as moinFile:
     moin = pickle.load(moinFile)
@@ -157,13 +157,7 @@ def OCR(images,assisted=False):
 
 #%%
 
-g = 'D:\\line\\koori.jpg'
-lines = detect_lines(g)
-words = get_words(lines)
-pad = padded_words(words[8])
-simple = OCR(pad)
-# assisted = OCR(pad,assisted=True)
-print(simple)
-# print(assisted)
-
+image_path = 'resources\\datasets\\new_pun\\valid\\kntu100300.png'
+img = [Image.open(image_path)]
+simple = OCR(img)
 #%%
