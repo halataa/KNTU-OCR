@@ -20,7 +20,7 @@ def  e_connects_with_letters_before_and_after(let) :
 
 #%%
 import pickle
-with open ('alphabetList.txt','rb') as file:
+with open ('resources\\alphabetList.txt','rb') as file:
     alphabetList=pickle.load(file)
 
 #%%

@@ -141,6 +141,9 @@ def make_data(word_list,num,save_dir,noise_ratio = 0.5,index=0):
 
 #%%
 if __name__ == "__main__":
-    make_data(moin,20000,'resources\\datasets\\new_pun\\train\\',0.5)
+    make_data(moin,1000,'resources\\datasets\\new_pun\\test\\',0.5)
 
 
+
+
+#%%
