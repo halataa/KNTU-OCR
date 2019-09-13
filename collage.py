@@ -16,7 +16,7 @@ ImageFile.LOAD_TRUNCATED_IMAGES = True ##we have to write this line to provide P
 
 
 #%%
-layerName='max1'
+layerName='conv1'
 folder='resources\\for presentation\\cnn images\\%s'%layerName
 imageNumber=0
 bord=3
@@ -38,7 +38,7 @@ else:
 width_with_fasele=int(width+((width/size[0])-1)*bord)
 height_with_fasele=int(height+((height/size[1])-1)*bord)
 
-background=Image.new('RGB',(width_with_fasele,height_with_fasele),color='black')
+background=Image.new('RGB',(width_with_fasele,height_with_fasele),color='white')
 background.save('resources\\blank images\\blank2.png')
 
 x=0

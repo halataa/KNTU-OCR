@@ -117,6 +117,8 @@ def predict (dir='C:\\Users\\Ali\\Documents\\Uni\\Projects\\OCR\\real ocr\\resou
     return(finalList[0][0]) 
 
 
-predict('resources\\for presentation\\cnn images\\kntu48333.png')
+predict('resources\\for presentation\\cnn images\\kntu789.png')
 
 #%%
+testScaled = single_test('resources\\for presentation\\cnn images\\kntu48333.png')
+prediction = miniModel.predict(testScaled)

@@ -43,10 +43,10 @@ def create_image(text, font_dir):
     return (img)
 
 
-def crop_image(img):
+def crop_image(img,tr=255):
     image_data = np.asarray(img)
-    non_empty_columns = np.where(image_data.min(axis=0) < 255)[0]
-    non_empty_rows = np.where(image_data.min(axis=1) < 255)[0]
+    non_empty_columns = np.where(image_data.min(axis=0) < tr)[0]
+    non_empty_rows = np.where(image_data.min(axis=1) < tr)[0]
     cropBox = (min(non_empty_rows), max(non_empty_rows),
                min(non_empty_columns), max(non_empty_columns))
     image_data_new = image_data[cropBox[0]
@@ -75,11 +75,11 @@ def padding_image(img, max_len, pad_value=255):
     image = Image.fromarray(image_array)
     return image
 
-def noise_image(img): # image arrray values shoulde be between 0 and 1
+def noise_image(img,intensity=0.6): # image arrray values shoulde be between 0 and 1
     img = np.array(img)
     max_array = np.max(img)
     img = img/max_array
-    severity = np.random.uniform(0, 0.6)
+    severity = np.random.uniform(0, intensity)
     blur = ndimage.gaussian_filter(np.random.randn(*img.shape) * severity, 1)
     img_speck = (img + blur)
     img_speck[img_speck > 1] = 1
