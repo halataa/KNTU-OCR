@@ -83,7 +83,7 @@ def make_nastaliq_data(word_list,num,save_dir,noise_ratio = 0.5,index=0):
                 rand_X = np.random.randint(0, BASE_IMAGE_SIZE[0] - rwi_size[0]+1)
                 rand_Y = np.random.randint(0, BASE_IMAGE_SIZE[1] - rwi_size[1]+1)
                 background_img.paste(resized_word_image,(rand_X,rand_Y))
-                if index >= noise_ratio*num:
+                if saved >= noise_ratio*num:
                     background_img.save(save_dir+'kntu'+'%s'%(str(index+1).zfill(5))+'.png')
                     # train_line = word+'\n'
                     with open(save_dir+"kntu%s.txt" %(str(index+1).zfill(5)), 'w', encoding='utf8') as txt:
@@ -111,7 +111,7 @@ def make_nastaliq_data(word_list,num,save_dir,noise_ratio = 0.5,index=0):
 if __name__ == "__main__":
     with open("resources\\moinMN.txt", 'rb') as moinFile:
         nast_list = pickle.load(moinFile)
-    make_nastaliq_data(nast_list,20000,'resources\\datasets\\nastaliq\\',noise_ratio=0.5,index=12122)
+    make_nastaliq_data(nast_list,20000,'resources\\datasets\\nastaliq\\',noise_ratio=0.5,index=19207)
 
 
 #%%

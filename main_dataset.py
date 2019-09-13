@@ -118,17 +118,17 @@ def make_data(word_list,num,save_dir,noise_ratio = 0.5,index=0):
                 rand_Y = np.random.randint(0, BASE_IMAGE_SIZE[1] - rwi_size[1])
                 background_img.paste(resized_word_image,(rand_X,rand_Y))
                 if saved >= noise_ratio*num:
-                    background_img.save(save_dir+'kntu'+'%s'%(str(index+1).zfill(5))+'.png')
-                    with open(save_dir+"kntu%s.txt" %(str(index+1).zfill(5)), 'w', encoding='utf8') as txt:
+                    background_img.save(save_dir+'kntu'+'%s'%(str(index+1).zfill(6))+'.png')
+                    with open(save_dir+"kntu%s.txt" %(str(index+1).zfill(6)), 'w', encoding='utf8') as txt:
                         if j % 10 == 2:
-                            word = word[:-1]
+                            pass
                         txt.write('%s \nfont : %s' % (word, 'fontName')) 
                 else:
                     final_image = noise_image(background_img)
-                    final_image.save(save_dir+'kntu'+'%s'%(str(index+1).zfill(5))+'.png')
-                    with open(save_dir+"kntu%s.txt" %(str(index+1).zfill(5)), 'w', encoding='utf8') as txt:
+                    final_image.save(save_dir+'kntu'+'%s'%(str(index+1).zfill(6))+'.png')
+                    with open(save_dir+"kntu%s.txt" %(str(index+1).zfill(6)), 'w', encoding='utf8') as txt:
                         if j % 10 == 2:
-                            word = word[:-1]
+                            pass
                         txt.write('%s \nfont : %s' % (word, 'fontName')) 
                 index += 1
                 saved += 1
@@ -141,7 +141,6 @@ def make_data(word_list,num,save_dir,noise_ratio = 0.5,index=0):
 
 #%%
 if __name__ == "__main__":
-    make_data(moin,20000,'resources\\datasets\\pun_dataset\\train\\',0.5,56088)
-    make_data(moin,2000,'resources\\datasets\\pun_dataset\\valid\\',0.5,76088)
+    make_data(moin,20000,'resources\\datasets\\new_pun\\train\\',0.5)
 
 

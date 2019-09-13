@@ -14,9 +14,9 @@ import json
 import operator
 from word_detection import *
 
-
+#%%
 miniModel = model.get_Model(training=False)
-miniModel.load_weights('models\\6-11[17-54]__Model\\bestModel.h5')
+miniModel.load_weights('models\\bestValModel.h5')
 
 with open("resources\\moinMN.txt", 'rb') as moinFile:
     moin = pickle.load(moinFile)
@@ -30,18 +30,21 @@ alphabetDict=json.load(open('resources\\alphabetDict.txt'))
 
 def single_test(image_path_or_array):
     if isinstance(image_path_or_array, str):
-        image = Image.open(imagePath)
+        image = Image.open(image_path_or_array)
         image = image.convert(mode='L')
         testArray = np.asarray(image.transpose(Image.FLIP_LEFT_RIGHT))
+        # testArray = testArray/255.
         SC = MinMaxScaler()
         testScaled = SC.fit_transform(testArray)
         testScaled = testScaled.T
         testScaled = np.expand_dims(testScaled, axis=-1)
         testScaled = np.expand_dims(testScaled, axis=0)
+        testScaled = [testScaled]
     else:
-        image = np.fliplr(image_path_or_array)
-        SC = MinMaxScaler()
-        testScaled = SC.fit_transform(image)
+        testScaled = np.fliplr(image_path_or_array)
+        # SC = MinMaxScaler()
+        # testScaled = SC.fit_transform(testScaled)
+        testScaled = testScaled/255.
         testScaled = testScaled.T
         testScaled = np.expand_dims(testScaled, axis=-1)
         testScaled = np.expand_dims(testScaled, axis=0)
@@ -153,11 +156,14 @@ def OCR(images,assisted=False):
 
 
 #%%
-image_path = "D:\\line\\line.jpg"
-lines = detect_lines(image_path)
+
+g = 'D:\\line\\koori.jpg'
+lines = detect_lines(g)
 words = get_words(lines)
-pad = padded_words(words[6])
+pad = padded_words(words[8])
 simple = OCR(pad)
-assisted = OCR(pad,assisted=True)
+# assisted = OCR(pad,assisted=True)
+print(simple)
+# print(assisted)
 
 #%%
