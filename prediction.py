@@ -18,7 +18,7 @@ import parameters as p
 
 #%%
 miniModel = model.get_Model(training=False)
-miniModel.load_weights('models\\6-20[21-25]__Model\\bestAccModel.h5')
+miniModel.load_weights('models\\6-21[12-28]__Model\\bestAccModel.h5')
 
 with open("resources\\moinMN.txt", 'rb') as moinFile:
     moin = pickle.load(moinFile)
@@ -28,8 +28,8 @@ with open('resources\\alphabetList.txt', 'rb',) as file:
 alphabetList.append('-')
 
 alphabetDict=json.load(open('resources\\alphabetDict.txt'))
-# alphabetDict['.']='.' #for virgool and noghte
-# alphabetDict['،']='،'
+alphabetDict['.']='.' #for virgool and noghte
+alphabetDict['،']='،'
 #%%
 
 def single_test(image_path_or_array):
@@ -163,7 +163,7 @@ def OCR(images,assisted=False):
 #%%
 import os
 import editdistance
-test_images_path = 'resources\\datasets\\nastaliq\\test\\'
+test_images_path = 'resources\\datasets\\new_pun\\test\\'
 path_files = os.listdir(test_images_path)
 image_list = []
 text_list = []
@@ -191,23 +191,32 @@ for l in range(len(simple_pred)):
         new_word.append(alphabetDict[item[k]])
     simple_preds.append(''.join(new_word))
 
-#%%
-trues = 0
-for j in range(len(simple_pred)):
-    if assisted_pred[j] == words[j]:
-        trues += 1
-
 
 #%%
-trues = 0
-ed = 0
+simple_trues = 0
+assisted_trues = 0
+
+simple_ed = 0
+assisted_ed = 0
+
 lens = 0
+
 for j in range(len(simple_pred)):
     lens += len(words[j])
     if simple_preds[j] == words[j]:
-        trues += 1
+        simple_trues += 1
     else:
-        ed += editdistance.eval(assisted_pred[j],words[j])
-CRR = (lens-ed)/lens
+        simple_ed += editdistance.eval(simple_preds[j],words[j])
+    if assisted_pred[j] == words[j]:
+        assisted_trues += 1
+    else:
+        assisted_ed += editdistance.eval(assisted_pred[j],words[j])
+
+
+simple_CRR = (lens-simple_ed)/lens
+assisted_CRR = (lens-assisted_ed)/lens
+
+print('simple: CRR = {}% , WRR = {}%'.format(round(simple_CRR*100,2),simple_trues/10))
+print('assisted: CRR = {}% , WRR = {}%'.format(round(assisted_CRR*100,2),assisted_trues/10))
 
 #%%
