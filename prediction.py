@@ -18,7 +18,7 @@ import parameters as p
 
 #%%
 miniModel = model.get_Model(training=False)
-miniModel.load_weights('models\\6-21[12-28]__Model\\bestAccModel.h5')
+miniModel.load_weights('models\\6-20[21-25]__Model\\bestAccModel.h5')
 
 with open("resources\\moinMN.txt", 'rb') as moinFile:
     moin = pickle.load(moinFile)
@@ -28,8 +28,8 @@ with open('resources\\alphabetList.txt', 'rb',) as file:
 alphabetList.append('-')
 
 alphabetDict=json.load(open('resources\\alphabetDict.txt'))
-alphabetDict['.']='.'
-alphabetDict['،']='،'
+# alphabetDict['.']='.' #for virgool and noghte
+# alphabetDict['،']='،'
 #%%
 
 def single_test(image_path_or_array):
@@ -110,6 +110,7 @@ def dict_assist(predictions,dictionary_influence=1.05,ret_list=False,pred_per_wo
     for prediction in predictions:
         data = prediction.squeeze()
         data = np.where(data == 1, 0.999, data)
+        data=np.where(data==0.0 , 1e-35,data)
         result = beam_search_decoder(data, pred_per_word)
         finalList = []
         probs = []
@@ -160,29 +161,9 @@ def OCR(images,assisted=False):
 
 
 #%%
-
-image_path = 'resources\\datasets\\new_pun\\valid\\kntu100300.png'
-img = [Image.open(image_path)]
-simple = OCR(img)
-#%%
-test_images_path = 'resources\\datasets\\new_pun\\test\\'
-test_gen = TextImageGenerator(test_images_path,p.img_w,p.img_h,p.batch_size,p.downsample_factor,max_text_len=p.max_text_len)
-test_gen.build_data()
-imgs = []
-for i in range(len(test_gen.texts)):
-    img , txt = test_gen.next_sample()
-    img = np.fliplr(img)
-    img = img*255
-    img = img.astype('uint8')
-    img = Image.fromarray(img)
-    imgs.append(img)
-
-pred = OCR(imgs,assisted=True)
-
-#%%
 import os
 import editdistance
-test_images_path = 'resources\\datasets\\new_pun\\test\\'
+test_images_path = 'resources\\datasets\\nastaliq\\test\\'
 path_files = os.listdir(test_images_path)
 image_list = []
 text_list = []
@@ -200,6 +181,8 @@ for i in range(len(image_list)):
         words.append(tfile.readline().strip())
 #%%
 simple_pred = OCR(imgs)
+assisted_pred = OCR(imgs,assisted=True)
+
 simple_preds=[]
 for l in range(len(simple_pred)):
     item = simple_pred[l]
@@ -207,7 +190,6 @@ for l in range(len(simple_pred)):
     for k in range(len(item)):
         new_word.append(alphabetDict[item[k]])
     simple_preds.append(''.join(new_word))
-assisted_pred = OCR(imgs,assisted=True)
 
 #%%
 trues = 0
@@ -225,7 +207,7 @@ for j in range(len(simple_pred)):
     if simple_preds[j] == words[j]:
         trues += 1
     else:
-        ed += editdistance.eval(simple_preds[j],words[j])
+        ed += editdistance.eval(assisted_pred[j],words[j])
 CRR = (lens-ed)/lens
 
 #%%
